@@ -1,0 +1,59 @@
+require('dotenv').config();
+const { default: makeWASocket, useSingleFileAuthState, DisconnectReason } = require('@adiwajshing/baileys');
+const qrcode = require('qrcode-terminal');
+const fs = require('fs');
+const path = require('path');
+
+const BOT_NAME = process.env.BOT_NAME || "MyBot";
+const SESSION_FILE = path.join(__dirname, 'auth_info.json');
+
+const { state, saveState } = useSingleFileAuthState(SESSION_FILE);
+
+async function startBot() {
+    const sock = makeWASocket({
+        auth: state,
+        printQRInTerminal: true
+    });
+
+    sock.ev.on('connection.update', ({ connection, qr, lastDisconnect }) => {
+        if (qr) {
+            console.log("Scan this QR code with WhatsApp:");
+            qrcode.generate(qr, { small: true });
+        }
+        if (connection === 'close') {
+            const reason = lastDisconnect?.error?.output?.statusCode;
+            if (reason !== DisconnectReason.loggedOut) {
+                console.log("Reconnecting...");
+                startBot();
+            } else {
+                console.log("Logged out. Delete auth_info.json and restart.");
+            }
+        } else if (connection === 'open') {
+            console.log("✅ Bot connected!");
+        }
+    });
+
+    sock.ev.on('creds.update', saveState);
+
+    sock.ev.on('messages.upsert', async ({ messages }) => {
+        const m = messages[0];
+        if (!m.message || m.key.fromMe) return;
+
+        let text = m.message.conversation || m.message.extendedTextMessage?.text || "";
+
+        if (/hello/i.test(text)) {
+            await sock.sendMessage(m.key.remoteJid, { text: `Hello! I am ${BOT_NAME}. Try /ping or /echo <text>` });
+        }
+
+        if (text.startsWith("/ping")) {
+            await sock.sendMessage(m.key.remoteJid, { text: "Pong!" });
+        }
+
+        if (text.startsWith("/echo ")) {
+            const msg = text.replace("/echo ", "");
+            await sock.sendMessage(m.key.remoteJid, { text: msg });
+        }
+    });
+}
+
+startBot();
