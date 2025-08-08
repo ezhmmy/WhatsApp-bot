@@ -4,7 +4,7 @@ const qrcode = require('qrcode-terminal');
 const fs = require('fs');
 const path = require('path');
 
-const BOT_NAME = process.env.BOT_NAME || "MyBot";
+const BOT_NAME = process.env.BOT_NAME || "Ezhmmy-bot";
 const SESSION_FILE = path.join(__dirname, 'auth_info.json');
 
 const { state, saveState } = useSingleFileAuthState(SESSION_FILE);
