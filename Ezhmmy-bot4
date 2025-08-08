@@ -1,0 +1,12 @@
+# WhatsApp Bot using Baileys
+
+This is a simple WhatsApp bot that:
+- Auto replies to "hello"
+- Responds to `/ping`
+- Echoes back text after `/echo`
+
+## Setup
+
+1. **Create a GitHub repo** and add these files.
+2. **Import into Replit** (Node.js template).
+3. In Replit shell:
