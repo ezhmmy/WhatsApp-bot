@@ -1,0 +1,14 @@
+{
+  "name": "Ezhmmy-bot",
+  "version": "1.0.0",
+  "description": "Simple WhatsApp bot using Baileys",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@adiwajshing/baileys": "^6.7.0",
+    "dotenv": "^16.0.3",
+    "qrcode-terminal": "^0.12.0"
+  }
+}
